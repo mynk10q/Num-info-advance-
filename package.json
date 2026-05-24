@@ -1,0 +1,12 @@
+{
+  "name": "mynk-api",
+  "version": "1.0.0",
+  "description": "Leak Info Clone API",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
