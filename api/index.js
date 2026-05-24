@@ -1,48 +1,53 @@
 export default async function handler(req, res) {
+
   const { key, term, type } = req.query;
 
+  // Your API Key
   if (key !== "mynkx") {
     return res.status(403).json({
       success: false,
       message: "Invalid Key",
-      credit: "@mynk_mynk_mynk"
+      owner: "@mynk_mynk_mynk"
     });
   }
 
-  if (!term) {
+  // Check params
+  if (!term || !type) {
     return res.status(400).json({
       success: false,
-      message: "Enter term",
-      credit: "@mynk_mynk_mynk"
+      message: "Missing term/type",
+      owner: "@mynk_mynk_mynk"
     });
   }
 
   try {
 
-    // External API Hit
-    const r = await fetch(
-      `https://leakinfoapi.noobgamingv40.workers.dev/api?key=Xy8kL9mN2pQr5tUv&type=${type}&term=${term}`
-    );
+    // Original API
+    const api = `https://leakinfoapi.noobgamingv40.workers.dev/api?key=Xy8kL9mN2pQr5tUv&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
-    const data = await r.json();
+    const response = await fetch(api);
 
-    // Credit Add
+    const data = await response.json();
+
+    // Add credit
     if (Array.isArray(data.result)) {
-      data.result = data.result.map(x => ({
-        ...x,
+      data.result = data.result.map(v => ({
+        ...v,
         credit: "@mynk_mynk_mynk"
       }));
     }
 
     data.owner = "@mynk_mynk_mynk";
 
-    res.status(200).json(data);
+    return res.status(200).json(data);
 
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      error: "API Error",
-      credit: "@mynk_mynk_mynk"
+  } catch (err) {
+
+    return res.status(500).json({
+      error: "Backend API Error",
+      details: err.message,
+      owner: "@mynk_mynk_mynk"
     });
+
   }
 }
