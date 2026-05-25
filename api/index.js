@@ -22,21 +22,35 @@ export default async function handler(req, res) {
 
   try {
 
-    // Original API
-    const api = `https://leakinfoapi.noobgamingv40.workers.dev/api?key=Xy8kL9mN2pQr5tUv&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
+    // NEW BACKEND API
+    const api = `https://usersxinfo-admin.onrender.com/api?key=UsersXinfofreeuersaa&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
     const response = await fetch(api);
 
     const data = await response.json();
 
-    // Add credit
+    // Remove backend owner/tag
+    delete data.owner;
+    delete data.developer;
+    delete data.creator;
+    delete data.credit;
+
+    // Add your own credit
     if (Array.isArray(data.result)) {
-      data.result = data.result.map(v => ({
-        ...v,
-        credit: "@mynk_mynk_mynk"
-      }));
+      data.result = data.result.map(v => {
+        delete v.owner;
+        delete v.developer;
+        delete v.creator;
+        delete v.credit;
+
+        return {
+          ...v,
+          credit: "@mynk_mynk_mynk"
+        };
+      });
     }
 
+    // Your owner tag
     data.owner = "@mynk_mynk_mynk";
 
     return res.status(200).json(data);
@@ -44,6 +58,7 @@ export default async function handler(req, res) {
   } catch (err) {
 
     return res.status(500).json({
+      success: false,
       error: "Backend API Error",
       details: err.message,
       owner: "@mynk_mynk_mynk"
