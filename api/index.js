@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   try {
 
     // Backend API
-    const api = `https://usersxinfo-admin.onrender.com/api?key=UsersXinfofreeuersaa&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
+    const api = `https://usersxinfo-admin.onrender.com/api?key=lljeliye&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
     const response = await fetch(api);
     const data = await response.json();
