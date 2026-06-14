@@ -20,7 +20,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Backend API
     const api = `https://usersxinfo-admin.onrender.com/api?key=lljeliye&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
     const response = await fetch(api, {
@@ -31,14 +30,26 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Remove unwanted fields from root
+    // Agar backend error ya limit exceed ho
+    if (
+      !data.success ||
+      (data.error && data.error.includes("Limit exceeded"))
+    ) {
+      return res.status(200).json({
+        success: false,
+        error: "Server Busy",
+        owner: "@mynk_mynk_mynk"
+      });
+    }
+
+    // Root fields remove
     delete data.owner;
     delete data.tag;
     delete data.developer;
     delete data.creator;
     delete data.credit;
 
-    // Remove unwanted fields from nested data
+    // Nested data fields remove
     if (data.result?.data) {
       delete data.result.data.owner;
       delete data.result.data.tag;
@@ -47,7 +58,7 @@ export default async function handler(req, res) {
       delete data.result.data.credit;
     }
 
-    // Remove unwanted fields from records array
+    // Records array fields remove
     if (Array.isArray(data.result?.data?.records)) {
       data.result.data.records = data.result.data.records.map(record => {
         delete record.owner;
@@ -59,19 +70,21 @@ export default async function handler(req, res) {
       });
     }
 
-    // Add your owner tag
+    // Apna owner add
     data.owner = "@mynk_mynk_mynk";
 
     // Cache headers
-    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate");
+    res.setHeader(
+      "Cache-Control",
+      "s-maxage=60, stale-while-revalidate"
+    );
 
     return res.status(200).json(data);
 
   } catch (err) {
-    return res.status(500).json({
+    return res.status(200).json({
       success: false,
-      error: "Backend API Error",
-      details: err.message,
+      error: "Server Busy",
       owner: "@mynk_mynk_mynk"
     });
   }
